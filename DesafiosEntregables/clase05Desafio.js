@@ -20,17 +20,23 @@ const fs = require("fs").promises;
 
 class ProductManager{
     productsIdAuto = 1;
-    #products = [];
+    #newProducts = [];
     path = ``;
     constructor(){
-        this.#products = [];
+        this.#newProducts = [];
         this.path = `./products.json`;
     }
     
+    //Lee datos del JSON.
+    async readData (){
+        const productsFile = await fs.readFile(this.path, "utf-8");
+        return   JSON.parse(productsFile);
+    }
+
     async addProduct(productData){
         try {
-            const productsFile = await fs.readFile(this.path, "utf-8");
-            let newProducts = JSON.parse(productsFile);
+            const newProducts = await this.readData()
+            
             //Valido Id/Code no utilizado aún.
             const validIdCode = newProducts.find(
                 (product) => product.id === productData.id || product.code === productData.code
@@ -68,8 +74,7 @@ class ProductManager{
 
     async getProductById(id){
         try {
-            const productsFile = await fs.readFile(this.path, "utf-8");
-            let newProducts = JSON.parse(productsFile);
+            const newProducts = await this.readData()
             
             const productId = newProducts.find(
                 (product) => product.id === id 
@@ -85,8 +90,7 @@ class ProductManager{
     
     async updateProduct(id, productData){
         try {
-            const productsFile = await fs.readFile(this.path, "utf-8");
-            let newProducts = JSON.parse(productsFile);
+            const newProducts = await this.readData()
             const productIdIndex = newProducts.findIndex(
                 (product) => product.id === id 
               );
@@ -100,8 +104,7 @@ class ProductManager{
 
     async deleteProduct(id){
         try {
-            const productsFile = await fs.readFile(this.path, "utf-8");
-            let newProducts = JSON.parse(productsFile);
+            const newProducts = await this.readData()
             const productId = newProducts.find(
                 (product) => product.id === id 
               );
