@@ -13,47 +13,49 @@ Se mandará a llamar desde el navegador a la url http://localhost:8080/products/
 Se mandará a llamar desde el navegador a la url http://localhost:8080/products/34123123, al no existir el id del producto, debe devolver un objeto con un error indicando que el producto no existe.
  */
 import ProductManager from "./ProductManager.js"
-
-const product1 = {
-    title: "producto prueba", 
-    description: "Este es un producto prueba", 
-    price: 200, 
-    thumbnail: "Sin imagen", 
-    code: "abc123", 
-    stock: 25
-}
-const product2 = {
-    title: "producto prueba2", 
-    escription: "Este es un producto prueba2", 
-    price: 200, 
-    thumbnail: "Sin imagen", 
-    code: "abc1234", 
-    stock: 25
-}
-const product1Update = {
-    title: "producto prueba MODIFICADO", 
-    description: "Este es un producto prueba", 
-    price: 200, 
-    thumbnail: "Sin imagen", 
-    code: "abc123", 
-    stock: 25
-}
+import express from 'express';
+const port = 8080
+const app = express();
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
 const productManager = new ProductManager()
 
 const main = async () => {
-    console.log("Listado de productos inicial: ", await productManager.getProducts());
-    console.log(await productManager.addProduct(product1));
-    console.log(await productManager.addProduct(product2));
-    console.log("Listado de productos: ", await productManager.getProducts());
-    console.log("Producto de id 1: ", await productManager.getProductById(1));
-    console.log("Producto de id 2: ", await productManager.getProductById(2));
-    console.log("Producto de id 3: ", await productManager.getProductById(3));
-    console.log(await productManager.updateProduct(1, product1Update));
-    console.log("Listado de productos: ", await productManager.getProducts());
-    console.log("Se elimina el producto de id 2: ", await productManager.deleteProduct(2));
-    console.log("Listado de productos: ", await productManager.getProducts());
-    console.log("Se elimina el producto de id 3: ", await productManager.deleteProduct(3));
+    await productManager.getProducts()
+    for (let i = 1; i <= 10; i++) { 
+        const product = {
+            title: "producto prueba"+i, 
+            description: "Este es un producto prueba", 
+            price: 200, 
+            thumbnail: "Sin imagen", 
+            code: "abc"+i, 
+            stock: 25
+        }
+        await productManager.addProduct(product)
+      }
+
+    app.get('/products', async (req, res) => {
+        const limit = +req.query.limit;
+        const productList = await productManager.getProducts()
+        if(limit > 0 && limit < 10)
+            { 
+            res.send({data: productList.slice(0, limit)});
+            }
+        else{
+            res.send({data: productList});
+        }
+    });
+
+    app.get('/products/:id', async (req, res) => {
+        const id = +req.params.id
+        const productId = await productManager.getProductById(id)
+        res.send({data: productId});
+    });
+
+    app.listen(port, () => {
+        console.log(`Servidor escuchando en el puerto ${port}`);
+      });  
 }
 
 main();
