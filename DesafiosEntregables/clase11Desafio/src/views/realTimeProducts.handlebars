@@ -1,0 +1,80 @@
+<div>
+    <h1>Eliminar Producto</h1>
+     <form id="remove" action="">
+        <label for="texto">Indique el id del producto a eliminar</label>
+        <input type="number" id="id" name="id"/>
+        <button type="submit">Enviar</button>
+    </form>
+</div>
+<hr>
+    <button id="add">Agregar producto</button>
+<hr>
+
+<div>
+    <h1>{{name}}</h1>
+    <div id="list">
+        {{#each productList}}
+        <div id="{{id}}">
+            <h2>Producto: {{id}}</h2>
+            <ul>
+                <li>Nombre: {{title}}</li>
+                <li>Descripcion: {{description}}</li>
+                <li>Precio: ${{price}}</li>
+                <li>Thumbnail: {{thumbnail}}</li>
+                <li>Codigo: {{code}}</li>
+                <li>Stock: {{stock}}</li>
+            </ul>
+        </div>
+        {{/each}}
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.js"></script>
+<script>
+    const socket = io();
+    socket.on('connect', () => {
+        console.log('Cliente Conectado');
+    })
+    socket.on('productRemoved', data => {
+        const productElement = document.getElementById(`${data}`);
+        if (productElement) productElement.remove();
+    });
+
+    socket.on('productAdded', data => {
+        const productAdded = `
+            <div id="${data.id}">
+            <h2>Producto: ${data.id}</h2>
+            <ul>
+                <li>Nombre: ${data.title}</li>
+                <li>Descripcion: ${data.description}</li>
+                <li>Precio: ${{data.price}}</li>
+                <li>Thumbnail: ${data.thumbnail}</li>
+                <li>Codigo: ${data.code}</li>
+                <li>Stock: ${data.stock}</li>
+            </ul>
+            </div>
+          `;
+        document.getElementById('list').insertAdjacentHTML("beforeend", productAdded);
+    });
+
+    const remove = document.getElementById('remove');
+    remove.addEventListener('submit', function (event) {
+      event.preventDefault();
+      const id = document.getElementById("id").value;
+      socket.emit('removeProduct', id);
+    })
+
+    const prueba = document.getElementById('add')
+    prueba.addEventListener("click", () => {
+        const product = {
+                title: "producto desde html", 
+                description: "Este es un producto prueba", 
+                price: 200, 
+                thumbnail: "Sin imagen", 
+                code: "codigo", 
+                stock: 25
+            }
+        socket.emit('addProduct', product);
+        console.log("Producto agregado")
+    })
+
+</script>
