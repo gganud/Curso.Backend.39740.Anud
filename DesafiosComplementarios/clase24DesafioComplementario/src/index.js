@@ -1,15 +1,23 @@
 /* 
 ***CONSIGNA DESAFIO***
 Consigna
-Con base en el login de nuestro entregable anterior, refactorizar para incluir los nuevos conceptos.
+Continuar sobre el proyecto que has trabajado para tu ecommerce y configurar los siguientes elementos:
 
 Aspectos a incluir
-  *Se deberá contar con un hasheo de contraseña utilizando bcrypt.
-  *Hacer el login con JWT.
-  *OPCIONAL: Agregar errorHandler del ejercicios y ademas zod validation
+  *Crear un modelo User el cual contará con los campos:
+    -first_name:String,
+    -last_name:String,
+    -email:String (único)
+    -age:Number,
+    -password:String(Hash)
+    -cart:Id con referencia a Carts
+    -role:String(default:’user’)
+  *Desarrollar las estrategias de Passport para que funcionen con este modelo de usuarios
+  *Modificar el sistema de login del usuario para poder trabajar con jwt. 
+  *Desarrollar un endpoint “current” para extraer la cookie que contiene el token para obtener el usuario asociado a dicho token, en caso de tener el token, devolver al usuario asociado al token, caso contrario devolver un error.
 
 Formato
-Link al repositorio de Github sin node_modules
+Link al repositorio de GitHub con el proyecto completo.
  */
 
 import dotenv from "dotenv";
