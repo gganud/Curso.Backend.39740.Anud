@@ -1,22 +1,23 @@
 import userSchema from "../../models/userSchema.js";
-class userMongooseDao {
+class UserMongooseDao {
   async paginate(criteria){
     const { limit, page } = criteria;
-    const userDocuments = await userSchema.paginate({}, { limit, page });
+    const userDocuments = limit == undefined ? await userSchema.paginate({}, { page }) : await userSchema.paginate({}, { limit, page })
     userDocuments.docs = userDocuments.docs.map(document => ({
         id: document._id,
         firstName: document.firstName,
         lastName: document.lastName,
         email: document.email,
-        age: document.age
+        age: document.age,
+        isAdmin: document.isAdmin,
+        role: document.role
     }));
     return userDocuments;
   }
 
   async getOne(id){
     const userDocument = await userSchema.findOne({ _id: id });
-    if(!userDocument)
-    {
+    if(!userDocument){
       throw new Error('User dont exist.');
     }
 
@@ -26,7 +27,9 @@ class userMongooseDao {
         lastName: userDocument?.lastName,
         email: userDocument?.email,
         age: userDocument?.age,
-        password: userDocument?.password
+        password: userDocument?.password,
+        isAdmin: userDocument?.isAdmin,
+        role: userDocument?.role
     }
   }
 
@@ -44,7 +47,9 @@ class userMongooseDao {
         lastName: userDocument?.lastName,
         email: userDocument?.email,
         age: userDocument?.age,
-        password: userDocument?.password
+        password: userDocument?.password,
+        isAdmin: userDocument?.isAdmin,
+        role: userDocument?.role
     }
   }
 
@@ -58,6 +63,8 @@ class userMongooseDao {
         email: userDocument.email,
         age: userDocument.age,
         password: userDocument.password,
+        isAdmin: userDocument?.isAdmin,
+        role: userDocument?.role
     }
   }
 
@@ -74,7 +81,9 @@ class userMongooseDao {
         firstName: userDocument.firstName,
         lastName: userDocument.lastName,
         email: userDocument.email,
-        age: userDocument.age
+        age: userDocument.age,
+        isAdmin: userDocument?.isAdmin,
+        role: userDocument?.role
     }
   }
 
@@ -82,4 +91,4 @@ class userMongooseDao {
     return userSchema.deleteOne({ _id: id });
   }
 }
-export default userMongooseDao;
+export default UserMongooseDao;

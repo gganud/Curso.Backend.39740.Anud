@@ -1,58 +1,42 @@
-import cartMongooseDao from "../daos/mongoose/cartMongooseDao.js";
-
+import CartMongooseDao from "../daos/mongoose/cartMongooseDao.js";
+import idValidation from "../validations/shared/idValidation.js";
+import quantityValidation from "../validations/cart/quantityValidation.js";
 class CartManager{
     constructor(){
-        this.cartOfMongooseDao = new cartMongooseDao();
+        this.cartOfMongooseDao = new CartMongooseDao();
     }
     async getCartById(id){
-        try {
-            return this.cartOfMongooseDao.getOneCart(id);
-        } catch (error) {
-            throw new Error (error);
-        }
-    }
-    async addCart(){
-        try {
-            return this.cartOfMongooseDao.createCart()
-        } catch (error) {
-            throw new Error (error);
-        }
-    }
-    async addToCart(idC, idP){
-        try { 
-            return this.cartOfMongooseDao.addProductToCart(idC, idP )
-        } catch (error) {
-            throw new Error (error);
-        }
-    }
-    async deleteProducts(idC){
-        try { 
-            return this.cartOfMongooseDao.deleteProducts(idC)
-        } catch (error) {
-            throw new Error (error);
-        }
-    }
-    async deleteProduct(idC, idP){
-        try { 
-            return this.cartOfMongooseDao.deleteProduct(idC, idP )
-        } catch (error) {
-            throw new Error (error);
-        }
-    }
-    async updateProduct(quantity, idC, idP){
-        try { 
-            return this.cartOfMongooseDao.updateProduct(quantity, idC, idP )
-        } catch (error) {
-            throw new Error (error);
-        }
-    }
-    async updateCart(products, idC){
-        try { 
-            return this.cartOfMongooseDao.updateProducts(products, idC)
-        } catch (error) {
-            throw new Error (error);
-        }
+        await idValidation.parseAsync({id});   
+        return this.cartOfMongooseDao.getOneCart(id);
     }
 
+    async addCart(){
+        return this.cartOfMongooseDao.createCart();
+    }
+
+    async addToCart(idC, idP){
+        await idValidation.parseAsync({idC, idP});   
+        return this.cartOfMongooseDao.addProductToCart(idC, idP );
+    }
+    async deleteProducts(idC){
+        await idValidation.parseAsync({idC}); 
+        return this.cartOfMongooseDao.deleteProducts(idC);
+    }
+
+    async deleteProduct(idC, idP){
+        await idValidation.parseAsync({idC, idP});   
+        return this.cartOfMongooseDao.deleteProduct(idC, idP);
+    }
+
+    async updateProduct(quantity, idC, idP){
+        await quantityValidation.parseAsync({quantity});
+        await idValidation.parseAsync({idC, idP});   
+        return this.cartOfMongooseDao.updateProduct(quantity, idC, idP);
+    }
+    async updateCart(products, idC){
+        await idValidation.parseAsync({idC});
+        return this.cartOfMongooseDao.updateProducts(products, idC);
+    }
 }
+
 export default  CartManager;

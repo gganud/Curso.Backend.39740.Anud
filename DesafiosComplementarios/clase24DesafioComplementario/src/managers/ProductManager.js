@@ -1,46 +1,33 @@
-import productMongooseDao from "../daos/mongoose/productMongooseDao.js";
+import ProductMongooseDao from "../daos/mongoose/productMongooseDao.js";
+import productCreateValidation from '../validations/product/productCreateValidation.js'
+import productUpdateValidation from '../validations/product/productUpdateValidation.js'
+import idValidation from "../validations/shared/idValidation.js";
 
 class ProductManager{
     constructor(){
-        this.productOfMongooseDao = new productMongooseDao();
+        this.productOfMongooseDao = new ProductMongooseDao();
     }
-    
+    //Revisar list producto p/agregar con criteria
     async listProducts(sort, inStock){
-        try {
-            
-            return this.productOfMongooseDao.getProducts(sort, inStock);
-        } catch (error) {
-            throw new Error (error);
-        }
+        return this.productOfMongooseDao.getProducts(sort, inStock);
     }
     async getProductById(id){
-        try {
-            return this.productOfMongooseDao.getOneProduct(id);
-        } catch (error) {
-            throw new Error (error);
-        }
+        await idValidation.parseAsync({id}); 
+        return this.productOfMongooseDao.getOneProduct(id);
     }
+    //Agregar getProductByCode
     async addProduct(data){
-        try {
-            return this.productOfMongooseDao.createProduct(data)
-        } catch (error) {
-            throw new Error (error);
-        }
+        await productCreateValidation.parseAsync(data)
+        return this.productOfMongooseDao.createProduct(data);
     }
     async updateProduct(id, data){
-        try {
-            return this.productOfMongooseDao.updateProduct(id, data)
-        } catch (error) {
-            throw new Error (error);
-        }
+        await productUpdateValidation.parseAsync({...data, id});
+        return this.productOfMongooseDao.updateProduct(id, data);
     }
 
     async deleteOneProduct(id){
-        try {
-            return this.productOfMongooseDao.deleteProduct(id);
-        } catch (error) {
-            throw new Error (error);
-        }
+        await idValidation.parseAsync({id}); 
+        return this.productOfMongooseDao.deleteProduct(id);
     }
 }
 export default  ProductManager;

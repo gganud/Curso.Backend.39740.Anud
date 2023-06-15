@@ -1,25 +1,19 @@
 import cartSchema from "../../models/cartsSchema.js";
-class cartMongooseDao {
+class CartMongooseDao {
 
     async getOneCart(id){
-        try {
-                const cartDocument = await cartSchema.findOne({ _id: id })
-                .populate('products.product')
-                if(!cartDocument)
-                {
-                    throw new Error('Cart dont exist.');
-                }
-                return {
-                    idCart: cartDocument._id,
-                    products: cartDocument.products.map(e =>({
-                        Product: e.product,
-                        Quantity: e.quantity  
-                    }))                
-                }
-            }
-        
-        catch (error) {
-            throw new Error (error);
+        const cartDocument = await cartSchema.findOne({ _id: id })
+        .populate('products.product')
+        if(!cartDocument)
+        {
+            throw new Error('Cart dont exist.');
+        }
+        return {
+            idCart: cartDocument._id,
+            products: cartDocument.products.map(e =>({
+                Product: e.product,
+                Quantity: e.quantity  
+            }))                
         }
     }
 
@@ -35,30 +29,28 @@ class cartMongooseDao {
             throw new Error (error);
         }
     }
-
+    //Mejorar logica de agregar producto al carro.
     async addProductToCart(idC, idP){
-        try {
-            const productOnCart = await cartSchema.findOne( {$and:[{ _id: idC },{"products.product": idP}]} );
-            if(!productOnCart){
-                const cartDocument = await cartSchema.findOneAndUpdate({ _id: idC }, { $push: {products: { product: idP, quantity: 1 }}}, { new: true})
-                return {
-                    id: cartDocument._id,
-                    products: cartDocument.products,
-                }
-            } 
-            else{
-                const cartDocument = await cartSchema.findOneAndUpdate({ _id: idC, "products.product": idP },{$inc: {"products.$.quantity": 1}}, { new: true})
-                if(!cartDocument){
-                    throw new Error('Cart dont exist.');
-                }     
-                return {
-                    id: cartDocument._id,
-                    products: cartDocument.products,
-                }
+        const productOnCart = await cartSchema.findOne( {$and:[{ _id: idC },{"products.product": idP}]} );
+        if(!productOnCart){
+            const cartDocument = await cartSchema.findOneAndUpdate(
+                { _id: idC }, 
+                { $push: {products: { product: idP, quantity: 1 }}}, 
+                { new: true})
+            return {
+                id: cartDocument._id,
+                products: cartDocument.products,
             }
         } 
-        catch (error) {
-            throw new Error (error);
+        else{
+            const cartDocument = await cartSchema.findOneAndUpdate({ _id: idC, "products.product": idP },{$inc: {"products.$.quantity": 1}}, { new: true})
+            if(!cartDocument){
+                throw new Error('Cart dont exist.');
+            }     
+            return {
+                id: cartDocument._id,
+                products: cartDocument.products,
+            }
         }
     }
 
@@ -141,4 +133,4 @@ class cartMongooseDao {
         }
     };
 }
-export default cartMongooseDao;
+export default CartMongooseDao;

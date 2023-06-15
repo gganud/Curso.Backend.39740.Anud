@@ -1,5 +1,5 @@
 import productSchema from "../../models/productsSchema.js";
-class productMongooseDao {
+class ProductMongooseDao {
     productInfo(productDocument){
         return {
             id: productDocument._id,
@@ -77,4 +77,4 @@ class productMongooseDao {
         return productSchema.updateMany({}, {$set:{"enable": true}}) 
     } */
 }
-export default productMongooseDao;
+export default ProductMongooseDao;

@@ -1,13 +1,16 @@
 import { Router } from 'express';
 import CartController from '../controllers/CartController.js'
-const CartRouter = Router();
+import auth from  '../middlewares/auth.js';
+import authorization from '../middlewares/authorization.js';
 
-CartRouter.post('/', CartController.saveCart);
-CartRouter.get('/:cid', CartController.getOneCart);
-CartRouter.post('/:cid/product/:pid', CartController.addProduct);
-CartRouter.delete('/:cid/product/:pid', CartController.deleteProduct);
-CartRouter.delete('/:cid', CartController.deleteProducts);
-CartRouter.put('/:cid', CartController.updateCart);
-CartRouter.put('/:cid/product/:pid', CartController.updateProduct);
+const cartRouter = Router();
 
-export default CartRouter;
+cartRouter.post('/', CartController.saveCart);
+cartRouter.get('/:cid', CartController.getOneCart);
+cartRouter.post('/:cid/product/:pid', auth, authorization('addProductByCartId'), CartController.addProduct);
+cartRouter.delete('/:cid/product/:pid', auth, authorization('deleteProductInCart'), CartController.deleteProduct);
+cartRouter.delete('/:cid', auth, authorization('deleteCart'), CartController.deleteProducts);
+cartRouter.put('/:cid', auth, authorization('updateCart'), CartController.updateCart);
+cartRouter.put('/:cid/product/:pid', auth, authorization('updateProductByCartId'), CartController.updateProduct);
+
+export default cartRouter;
