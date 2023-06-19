@@ -64,7 +64,7 @@ class UserMongooseDao {
         age: userDocument.age,
         password: userDocument.password,
         isAdmin: userDocument?.isAdmin,
-        role: userDocument?.role
+        role: null
     }
   }
 
@@ -83,7 +83,6 @@ class UserMongooseDao {
         email: userDocument.email,
         age: userDocument.age,
         isAdmin: userDocument?.isAdmin,
-        role: userDocument?.role
     }
   }
 

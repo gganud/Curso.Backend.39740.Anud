@@ -3,6 +3,7 @@ import SessionManager from "../../domain/managers/sessionManager.js";
 class SessionController{
     static login = async (req, res, next) =>{
         try {
+            const { email, password } = req.body;
             const manager = new SessionManager();
             const accessToken = await manager.login(email, password);
             res.cookie('accessToken', accessToken, {

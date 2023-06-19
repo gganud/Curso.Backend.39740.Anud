@@ -16,7 +16,14 @@ const errorHandler = (err, req, res, next) =>
       console.log(err.stack);
       return res.status(401).send({ message: 'Email and Password invalid format.'})
   }
-  
+  else if (err?.message.includes('Product dont exist.')){
+    console.log(err.stack);
+    return res.status(401).send({ message: 'Product dont exist.'})
+  }
+  else if (err?.message.includes('Product is already removed.')){
+    console.log(err.stack);
+    return res.status(401).send({ message: 'Product is already removed.'})
+  }
   console.error(err.stack);
   res.status(500).json({ message: 'Ocurrió un error' });
 };

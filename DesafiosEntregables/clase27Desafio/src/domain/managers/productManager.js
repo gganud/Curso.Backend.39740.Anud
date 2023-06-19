@@ -7,26 +7,31 @@ class ProductManager{
     constructor(){
         this.productOfMongooseDao = new ProductMongooseDao();
     }
-    //Revisar list producto p/agregar con criteria
-    async listProducts(sort, inStock){
-        return this.productOfMongooseDao.getProducts(sort, inStock);
+    async listProducts(criteria){
+        return this.productOfMongooseDao.getProducts(criteria);
     }
     async getProductById(id){
-        await idValidation.parseAsync({id}); 
-        return this.productOfMongooseDao.getOneProduct(id);
+        await idValidation.parseAsync(id);
+        const product = await this.productOfMongooseDao.getOneProductById(id);
+        if (product === false){
+            throw new Error('Product dont exist.');
+        }
+        return product;
     }
-    //Agregar getProductByCode
+    async getOneProductByCode(code){
+        return this.productOfMongooseDao.getOneProductByCode(code);
+    }
     async addProduct(data){
-        await productCreateValidation.parseAsync(data)
+        await productCreateValidation.parseAsync(data);
         return this.productOfMongooseDao.createProduct(data);
     }
     async updateProduct(id, data){
-        await productUpdateValidation.parseAsync({...data, id});
+        await productUpdateValidation.parseAsync({id, ...data});
         return this.productOfMongooseDao.updateProduct(id, data);
     }
 
     async deleteOneProduct(id){
-        await idValidation.parseAsync({id}); 
+        await idValidation.parseAsync(id); 
         return this.productOfMongooseDao.deleteProduct(id);
     }
 }

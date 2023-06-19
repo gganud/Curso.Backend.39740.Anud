@@ -28,7 +28,7 @@ class SessionManager
 
     const dto = {
       ...payload,
-      password: await hash.createHash(req.body.password, 10)
+      password: await hash.createHash(payload.password, 10)
     }
     const user  = await this.userDao.create(dto);
     return { ...user, password: undefined};

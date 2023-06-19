@@ -1,6 +1,8 @@
 import express from 'express';
 import cookieParser from "cookie-parser";
 
+import config from '../../config/index.js';
+
 import cartRouter from '../routes/CartRouter.js';
 import productRouter from '../routes/productRouter.js';
 import userRouter from "../routes/userRouter.js";
@@ -29,8 +31,8 @@ class AppExpress{
     }
 
     listen(){
-      return this.app.listen(process.env.NODE_PORT, () => {
-        console.log(`Server listening on port ${process.env.NODE_PORT}`);
+      return this.app.listen(config.port, () => {
+        console.log(`Server listening on port ${config.port}`);
       });
     }
 }

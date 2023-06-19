@@ -12,66 +12,53 @@ class ProductMongooseDao {
             enable: productDocument.enable
         }
     }
-    async getProducts(sort, inStock){
-        try {
-            const products = await productSchema.find({enable: inStock})
-            .sort({price: sort});
-            return products.map(productDocument => (
-                this.productInfo(productDocument)
-            )); 
-        } 
-        catch (error) {
-            throw new Error (error);
+    async getProducts(criteria){
+        const { limit, page, inStock, sort } = criteria;
+        const productDocuments = limit == undefined ? await productSchema.paginate({enable: inStock}, { page, sort: {price: sort} }) : await productSchema.paginate({enable: inStock}, { limit, page, sort: {price: sort} })
+        productDocuments.docs = productDocuments.docs.map(document => (
+            this.productInfo(document)
+        ));
+        return productDocuments;
+      }
+    
+    async getOneProductById(id){
+        const productDocument = await productSchema.findOne({ _id: id })
+        if(!productDocument){ //QUITAR DEL DAO Prueba!!
+            return false
         }
+        return (this.productInfo(productDocument))
     }
-    async getOneProduct(id){
-        try {
-            const productDocument = await productSchema.findOne({ _id: id })
-            if(!productDocument)
-            {
-                throw new Error('Product dont exist.');
-            }
-            return (this.productInfo(productDocument))
-        } 
-        catch (error) {
-            throw new Error (error);
+
+    async getOneProductByCode(code){
+        const productDocument = await productSchema.findOne({ code })
+        if(!productDocument){//QUITAR DEL DAO
+            throw new Error('Product dont exist.');
         }
+        return (this.productInfo(productDocument))
     }
 
     async createProduct(data){
-        try {
-            const productDocument = await productSchema.create(data);
-            return (this.productInfo(productDocument))
-        } 
-        catch (error) {
-            throw new Error (error);
-        }
+        const productDocument = await productSchema.create(data);
+        return (this.productInfo(productDocument))
     }
 
     async updateProduct(id, data){
-        try {
-            const productDocument = await productSchema.findOneAndUpdate({ _id: id }, data, { new: true})
-            if(!productDocument){
-                throw new Error('Product dont exist.');
-            }
-            return (this.productInfo(productDocument))
-        } 
-        catch (error) {
-            throw new Error (error);
+        const productDocument = await productSchema.findOneAndUpdate({ _id: id }, data, { new: true})
+        if(!productDocument){//QUITAR DEL DAO
+            throw new Error('Product dont exist.');
         }
+        return (this.productInfo(productDocument))
     }
 
     async deleteProduct(id){
-        try {
-            if(!id){
-                throw new Error('Product dont exist.');
-            }
-            
-            return productSchema.findOneAndUpdate({ _id: id }, {enable: false})
-        } 
-        catch (error) {
-            throw new Error (error);
+        const productDocument = await productSchema.findOneAndUpdate({ _id: id }, {enable: false})
+        if(!productDocument){//QUITAR DEL DAO
+            throw new Error('Product dont exist.');
         }
+        if(productDocument.enable === false){
+            throw new Error('Product is already removed.');
+        }
+        return (this.productInfo(productDocument))
     }
     /* async addfield(){
         return productSchema.updateMany({}, {$set:{"enable": true}}) 

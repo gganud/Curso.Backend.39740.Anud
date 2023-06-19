@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import config from "./index.js"
 class ConnectDataBase{
     static connect = async ()=>{
         try {
-            await mongoose.connect(process.env.MONGO_DB_URI, {
+            await mongoose.connect(config.dbUri, {
                 useNewUrlParser: true,
                 useUnifiedTopology: true
             });
