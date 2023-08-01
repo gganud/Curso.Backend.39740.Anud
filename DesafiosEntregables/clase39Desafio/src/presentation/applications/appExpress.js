@@ -2,6 +2,7 @@ import express from 'express';
 import cookieParser from "cookie-parser";
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUiExpress from 'swagger-ui-express';
+import { SwaggerTheme } from 'swagger-themes';
 
 import config from '../../config/index.js';
 
@@ -13,7 +14,7 @@ import roleRouter from "../routes/roleRouter.js";
 
 import logger from '../middlewares/logger.js';
 import errorHandler from '../middlewares/errorHandler.js';
-import { log } from 'console';
+
 
 class AppExpress{
 init(){
@@ -34,7 +35,12 @@ init(){
             apis: ['./docs/**/*.yaml']
         };
         const specs = swaggerJsdoc(swaggerOptions)
-        this.app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))
+        const theme = new SwaggerTheme('v3');
+        const options = {
+            explorer: false,
+            customCss: theme.getBuffer('dark')
+        };
+        this.app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs, options))
         this.app.use(express.json());
         this.app.use(express.urlencoded({extended: true}));
         this.app.use(cookieParser());
