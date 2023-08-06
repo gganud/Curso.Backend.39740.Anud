@@ -16,7 +16,6 @@ let pinoOptions = ''
 if (config.env == 'Production'){
   pinoOptions = {
     timestamp: pino.stdTimeFunctions.isoTime,
-    level: 'debug',
     customLevels: levels,
     useOnlyCustomLevels: true,
     transport: {
